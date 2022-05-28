@@ -1,0 +1,21 @@
+{
+  "name": "library-api",
+  "version": "1.0.0",
+  "description": "book library api",
+  "main": "app.js",
+  "scripts": {
+    "dev": "nodemon ./app.js localhost 3000"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "jsonwebtoken": "^8.5.1",
+    "nodemon": "^2.0.16",
+    "pg": "^8.7.3",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.19.0"
+  }
+}

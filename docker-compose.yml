@@ -1,0 +1,57 @@
+version: '3.9'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "7000:7000"
+    # container_name: frontend
+    volumes:
+       - ./frontend:/usr/src/app/frontend
+       - /usr/src/app/frontend/node_modules
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    # container_name: backend
+    volumes:
+       - ./backend:/usr/src/app/backend
+       - /usr/src/app/backend/node_modules
+    networks:
+      - library-bridge
+  db:
+    image: postgres:13-alpine
+    # container_name: database
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - 5500:5432
+    networks:
+      - library-bridge
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=library
+  pgadmin4:
+    image: dpage/pgadmin4:latest
+    # container_name: pgadmin
+    restart: always
+    ports:
+      - 8080:80
+    depends_on:
+      - db
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "andrew.hrimov@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "1"
+    networks:
+      - library-bridge
+
+networks:
+    library-bridge:
+        driver: bridge
+volumes:
+  postgres_data:
