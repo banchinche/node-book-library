@@ -3,8 +3,8 @@ const jwt = require('jsonwebtoken')
 const router = express.Router()
 const db = require('../database')
 
-function generateAccessToken(email) {
-    return jwt.sign( email, process.env.TOKEN_SECRET, { expiresIn: '1800s' })
+function generateAccessToken(id) {
+    return jwt.sign( id, process.env.TOKEN_SECRET, { expiresIn: '1800s' })
 }
 
 router.post("/signup", function(req, res) {
@@ -13,7 +13,7 @@ router.post("/signup", function(req, res) {
         password: req.body.password
     })
         .then( user => {
-            const token = {'accesstoken': generateAccessToken({email: user.email})}
+            const token = {'accesstoken': generateAccessToken({id: user.id})}
             res.status(200).send(JSON.stringify(token))
         })
         .catch( error => {
@@ -30,7 +30,7 @@ router.post("/signin", function(req, res) {
     })
         
         .then( user => {
-            const token = {'accesstoken': generateAccessToken({email: user.email})}
+            const token = {'accesstoken': generateAccessToken({id: user.id})}
             res.status(200).send(JSON.stringify(token))
         })
         .catch( error => {

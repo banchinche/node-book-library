@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize')
-const sequelize = new Sequelize('postgres://postgres:root@localhost:5500/library')
+const sequelize = new Sequelize('postgres://postgres:root@db:5432/library')
+
 
 const User = sequelize.define('User', {
     id: {
@@ -127,3 +128,5 @@ module.exports = {
     UserBook: UserBook,
     BookGenre: BookGenre
 }
+
+sequelize.sync()
