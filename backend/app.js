@@ -33,8 +33,9 @@ var unless = function(middleware, ...paths) {
   return function(req, res, next) {
     const pathCheck = paths.some(path => path === req.path)
     pathCheck ? next() : middleware(req, res, next)
-  }
-}
+  };
+};
+app.use(cors());
 
 app.use(unless(authenticateToken, "/signin", "/signup"))
 
@@ -44,7 +45,6 @@ app.use(function(request, response, next){
   next()
 })
 
-app.use(cors())
 app.use(express.json())
 app.use('/users', userRouter)
 app.use('/directors', directorRouter)
