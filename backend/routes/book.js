@@ -68,32 +68,28 @@ router.put("/:id", function(req, res) {
         DirectorId: req.body.directorid
     }, 
     {
-        where: {
-          id: req.params.id
-        }
+        where: {id: req.params.id}
     })
         .then( book => {
-            const associations = req.body.genres.map((id) => ({"BookId": book.id, "GenreId": id}))
-            db.BookGenre.bulkCreate(associations)
-            .then(bookGenre => {
-                db.Book.findByPk(book.id,
-                    {
-                        include: db.Genre
-                    })
-                    .then( book => {
-                        res.status(200).send(JSON.stringify(book));
-                    })
-                    .catch( error => {
-                        res.status(500).send(JSON.stringify(error));
-                    })
-            }).catch( error => {
-                res.status(500).send(JSON.stringify(error))
+            db.BookGenre.destroy({
+                where: {BookId: req.params.id} 
             })
+                .then(() => {
+                    const associations = req.body.genres.map((id) => ({"BookId": req.params.id, "GenreId": id}))
+                    db.BookGenre.bulkCreate(associations)
+                    .then( bookGenres => {
+                        db.Book.findByPk(req.params.id, {include: db.Genre})
+                        .then( book => {
+                            res.status(200).send(JSON.stringify(book));
+                        })
+                    })
+                })
+            })
+
+        .catch(error => {
+            res.status(500).send(JSON.stringify(error));
         })
-        .catch( error => {
-            res.status(500).send(JSON.stringify(error))
-        })
-})
+    })
 
 router.delete("/:id", function(req, res) {
     db.Book.destroy({
