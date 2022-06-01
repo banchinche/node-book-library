@@ -23,7 +23,7 @@ router.put("/me", function(req, res) {
         }
     })
         .then( user => {
-            res.status(200).send();
+            res.status(200).send(user);
         })
         .catch( error => {
             res.status(500).send(JSON.stringify(error));
@@ -44,28 +44,33 @@ router.get("/books", function(req, res) {
 })
 
 router.put("/books", function(req, res) {
-    const associations = req.body.books.map((id) => ({"BookId": id, "UserId": req.user.id}))
-    db.UserBook.bulkCreate(associations)
-        .then( books => {
-            res.status(200).send();
-        })
-        .catch( error => {
-            res.status(500).send(JSON.stringify(error));
-        })
-})
-
-router.delete("/:id", function(req, res) {
     db.UserBook.destroy({
-        where: {
-            id: req.params.id
-        }
+        where: {UserId: req.user.id} 
     })
-        .then(() => {
-            res.status(204).send();
-        })
-        .catch( error => {
+    .then(() => {
+            if (req.body.books) {
+                const associations = req.body.books.map((id) => ({"UserId": req.user.id, "BookId": id}))
+                db.UserBook.bulkCreate(associations)
+                .then(userBooks => {
+                    db.User.findByPk(req.user.id,
+                        {
+                            include: db.Book
+                        })
+                        .then( books => {
+                            res.status(200).send(JSON.stringify(books));
+                        })
+                        .catch( error => {
+                            res.status(500).send(JSON.stringify(error));
+                        })
+                })
+                .catch(error => {
+                    res.status(500).send(JSON.stringify(error));
+                })
+            }
+    })
+    .catch(error => {
             res.status(500).send(JSON.stringify(error));
-        })
+    })
 })
 
 module.exports = router

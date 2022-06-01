@@ -75,13 +75,22 @@ router.put("/:id", function(req, res) {
                 where: {BookId: req.params.id} 
             })
                 .then(() => {
-                    const associations = req.body.genres.map((id) => ({"BookId": req.params.id, "GenreId": id}))
-                    db.BookGenre.bulkCreate(associations)
-                    .then( bookGenres => {
-                        db.Book.findByPk(req.params.id, {include: db.Genre})
-                        .then( book => {
-                            res.status(200).send(JSON.stringify(book));
+                    if (req.body.genres) {
+                        const associations = req.body.genres.map((id) => ({"BookId": req.params.id, "GenreId": id}))
+                        db.BookGenre.bulkCreate(associations)
+                        .then( bookGenres => {
+                            db.Book.findByPk(req.params.id, {include: db.Genre})
+                            .then( book => {
+                                res.status(200).send(JSON.stringify(book));
+                            })
                         })
+                    }
+                    db.Book.findByPk(req.params.id, {include: db.Genre})
+                    .then( book => {
+                        res.status(200).send(JSON.stringify(book));
+                    })
+                    .catch(error => {
+                        res.status(500).send(JSON.stringify(error))
                     })
                 })
             })
