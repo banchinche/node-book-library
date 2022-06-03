@@ -1,4 +1,4 @@
-FROM node:10
+FROM node:15
 
 WORKDIR /usr/src/app/frontend
 
@@ -8,4 +8,4 @@ RUN npm install
 
 EXPOSE 7000
 
-CMD ["npm", "run", "serve"]
+CMD ["npm", "run", "start"]

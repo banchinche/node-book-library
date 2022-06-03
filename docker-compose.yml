@@ -1,23 +1,27 @@
 version: '3.9'
 
 services:
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "7000:7000"
-  #   # container_name: frontend
-  #   volumes:
-  #      - ./frontend:/usr/src/app/frontend
-  #      - /usr/src/app/frontend/node_modules
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "7000:7000"
+    container_name: frontend-node-library
+    volumes:
+       - ./frontend:/usr/src/app/frontend
+       - /usr/src/app/frontend/node_modules
+    networks:
+      - library-bridge
+    depends_on:
+      - backend
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    # container_name: backend
+    container_name: backend-node-library
     environment: 
       - TOKEN_SECRET=ASDASDASDSADASDASDASDJWQJ@JJE#JEDHFEFQT#RJEKDJ
     volumes:
@@ -29,7 +33,7 @@ services:
       - db
   db:
     image: postgres:13-alpine
-    # container_name: database
+    container_name: database-node-library
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     ports:
@@ -40,19 +44,19 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=root
       - POSTGRES_DB=library
-  # pgadmin4:
-  #   image: dpage/pgadmin4:latest
-  #   # container_name: pgadmin
-  #   restart: always
-  #   ports:
-  #     - 8080:80
-  #   depends_on:
-  #     - db
-  #   environment:
-  #     PGADMIN_DEFAULT_EMAIL: "andrew.hrimov@gmail.com"
-  #     PGADMIN_DEFAULT_PASSWORD: "1"
-  #   networks:
-  #     - library-bridge
+  pgadmin4:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin-node-library
+    restart: always
+    ports:
+      - 8080:80
+    depends_on:
+      - db
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "andrew.hrimov@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "1"
+    networks:
+      - library-bridge
 
 networks:
     library-bridge:
